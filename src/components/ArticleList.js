@@ -1,23 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getArticles } from '../services/api';
+import SortMenu from './SortMenu';
 
-function ArticleList() {
-  const [articles, setArticles] = useState([]);
+const ArticleList = ({ articles, loading }) => {
+  const [sortType, setSortType] = useState('asc');
 
-  useEffect(() => {
-    async function fetchData() {
-      const result = await getArticles();
-      setArticles(result);
+  const handleSortChange = (type) => {
+    setSortType(type);
+  };
+
+  const sortedArticles = articles.sort((a, b) => {
+    if (sortType === 'asc') {
+      return a.title.localeCompare(b.title);
+    } else {
+      return b.title.localeCompare(a.title);
     }
-    fetchData();
-  }, []);
+  });
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div>
-      <h1>Articles</h1>
+    <div className="article-list">
+      <h2>Liste des Articles</h2>
+      <SortMenu onSortChange={handleSortChange} />
       <ul>
-        {articles.map(article => (
+        {sortedArticles.map(article => (
           <li key={article.id}>
             <Link to={`/article/${article.id}`}>{article.title}</Link>
           </li>
@@ -25,6 +34,6 @@ function ArticleList() {
       </ul>
     </div>
   );
-}
+};
 
 export default ArticleList;

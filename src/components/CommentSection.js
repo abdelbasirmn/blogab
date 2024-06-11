@@ -1,42 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { postComment, getComments } from '../services/api';
+import React, { useState } from 'react';
 
-function CommentSection({ articleId }) {
+const CommentSection = () => {
+  const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState('');
 
-  useEffect(() => {
-    async function fetchComments() {
-      const result = await getComments(articleId);
-      setComments(result);
-    }
-    fetchComments();
-  }, [articleId]);
+  const handleCommentChange = event => {
+    setComment(event.target.value);
+  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const comment = await postComment(articleId, newComment);
+  const handleSubmit = event => {
+    event.preventDefault();
     setComments([...comments, comment]);
-    setNewComment('');
+    setComment('');
   };
 
   return (
-    <div>
-      <h2>Comments</h2>
+    <div className="comment-section">
+      <h3>Commentaires</h3>
       <ul>
-        {comments.map(comment => (
-          <li key={comment.id}>{comment.content}</li>
+        {comments.map((comment, index) => (
+          <li key={index}>{comment}</li>
         ))}
       </ul>
       <form onSubmit={handleSubmit}>
-        <textarea
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-        />
-        <button type="submit">Add Comment</button>
+        <textarea value={comment} onChange={handleCommentChange} />
+        <button type="submit">Ajouter un commentaire</button>
       </form>
     </div>
   );
-}
+};
 
 export default CommentSection;
